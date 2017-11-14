@@ -1,5 +1,4 @@
 import { AppRegistry } from 'react-native';
-import Routes from './src/services/Routes';
+import { Routes } from './src/services/Routes';
 
-AppRegistry
-    .registerComponent('ToDoManager', () => Routes);
+AppRegistry.registerComponent('ToDoManager', () => Routes);
