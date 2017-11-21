@@ -1,12 +1,25 @@
 import React, { Component } from 'react';
 import {
     View, Image, TextInput,
-    Button, StyleSheet, KeyboardAvoidingView, Text
+    Button, StyleSheet, KeyboardAvoidingView, Text,
+    Alert
 } from 'react-native';
+import { createUserOnFirebase } from '../services/FirebaseApi';
+import { NavigationActions } from 'react-navigation';
 
 const img = require('../assets/TodoList.png');
 
 export default class Register extends Component {
+
+    static navigationOptions = {
+        title: 'Register'
+    }
+
+    constructor(props) {
+        super(props);
+
+        this.state = { email: '', password: '' };
+    }
 
     render() {
         return(
@@ -19,14 +32,38 @@ export default class Register extends Component {
                 <View style={styles.bottomView}>
                     <TextInput style={styles.input}
                         placeholder='Email'
-                        keyboardType={'email-address'}/>
+                        keyboardType={'email-address'}
+                        onChangeText={ (email) => this.setState({ email })}/>
                     <TextInput style={styles.input}
                         placeholder='Password'
-                        secureTextEntry={true}/>
-                    <Button title='Register'/>
+                        secureTextEntry={true}
+                        onChangeText={ (password) => this.setState({ password })}/>
+                    <Button title='Register'
+                        onPress={ () => this.registerUser()}/>
                 </View>
             </KeyboardAvoidingView>
         );
+    }
+
+    registerUser() {
+        
+        createUserOnFirebase(this.state.email, this.state.password)
+            .then( (user) => {
+                Alert.alert('User Created',
+                    `User ${this.state.email} created!`,
+                [{
+                    text: 'Ok', onPress: ( () => {
+                        let backAction = NavigationActions.back({key: null});
+                        this.props.navigation.dispatch(backAction);
+                    })
+                }]);
+            })
+            .catch( (error) =>
+            {
+                Alert.alert('Creation User Failed', error.message);
+            });
+
+
     }
 }
 

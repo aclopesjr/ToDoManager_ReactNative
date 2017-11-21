@@ -28,13 +28,18 @@ export default class Login extends Component {
                     <Button title='Sign In'/>
                     <View style={styles.textConteiner}>
                         <Text>Not a member? Let's </Text>
-                        <Text style={styles.textRegister}>
+                        <Text style={styles.textRegister}
+                            onPress={ () => this.onRegister() }>
                             Register
                         </Text>
                     </View>
                 </View>
             </KeyboardAvoidingView>
         );
+    }
+
+    onRegister() {
+        this.props.navigation.navigate('Register');
     }
 }
 
