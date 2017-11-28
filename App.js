@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import Login from './src/screens/Login';
-import { initializeFirebaseApi } from './src/services/FirebaseApi';
+import { initializeFirebaseApi, currentFirebaseUser } from './src/services/FirebaseApi';
 
 export default class App extends Component {
 
@@ -25,7 +25,16 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.props.navigation.navigate('Login');
+    currentFirebaseUser()
+      .then( (user) => {
+
+        if (user) {
+          this.props.navigation.navigate('Task');
+        } else {
+          this.props.navigation.navigate('Login');
+        }
+
+      });
   }
 }
 

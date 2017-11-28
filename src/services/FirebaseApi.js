@@ -13,6 +13,23 @@ export const initializeFirebaseApi = () => {
     firebase.initializeApp(config);
 }
 
+export function currentFirebaseUser() {
+
+    return new Promise( (resolve, reject) => {
+        
+        var funcUnsubscribe = null;
+        funcUnsubscribe = firebase.auth().onAuthStateChanged(
+            (user) => {
+            resolve(user);
+        }, (error) => {
+            reject(error);
+        }, (completed) => {
+            funcUnsubscribe();
+        });
+
+    } );
+}
+
 export function createUserOnFirebase(email, password) {
     return firebase.auth()
         .createUserWithEmailAndPassword(email, password);
@@ -28,5 +45,23 @@ export function createUserOnFirebase(email, password) {
     //         });
 
     // });
+}
 
+export function signInOnFirebase(email, password) {
+
+    return firebase.auth()
+        .signInWithEmailAndPassword(email, password);
+
+    // return new Promise( (resolve, reject) => {
+
+    //     firebase.auth()
+    //         .signInWithEmailAndPassword(email, password)
+    //         .then( (success) => {
+    //             resolve(success);
+    //         })
+    //         .catch( (error) => {
+    //             reject(error);
+    //         });
+
+    // });
 }
