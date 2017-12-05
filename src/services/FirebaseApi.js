@@ -13,55 +13,60 @@ export const initializeFirebaseApi = () => {
     firebase.initializeApp(config);
 }
 
+var firebaseUser = null;
+
 export function currentFirebaseUser() {
 
-    return new Promise( (resolve, reject) => {
-        
+    return new Promise((resolve, reject) => {
+
         var funcUnsubscribe = null;
         funcUnsubscribe = firebase.auth().onAuthStateChanged(
             (user) => {
-            resolve(user);
-        }, (error) => {
-            reject(error);
-        }, (completed) => {
-            funcUnsubscribe();
-        });
-
-    } );
+                firebaseUser = user;
+                resolve(user);
+            }, (error) => {
+                reject(error);
+            }, (completed) => {
+                funcUnsubscribe();
+            });
+    });
 }
 
 export function createUserOnFirebase(email, password) {
     return firebase.auth()
         .createUserWithEmailAndPassword(email, password);
-    // return new Promise( (resolse, reject) => {
-
-    //     firebase.auth()
-    //         .createUserWithEmailAndPassword(email, password)
-    //         .then( (success) => {
-    //             resolse(success);
-    //         })
-    //         .catch( (error) => {
-    //             reject(error);
-    //         });
-
-    // });
 }
 
 export function signInOnFirebase(email, password) {
-
     return firebase.auth()
         .signInWithEmailAndPassword(email, password);
+}
 
-    // return new Promise( (resolve, reject) => {
+export function writeTaskOnFirebase(data) {
+    const key = firebase.database()
+        .ref(firebaseUser.uid)
+        .child('tasks')
+        .push().key;
 
-    //     firebase.auth()
-    //         .signInWithEmailAndPassword(email, password)
-    //         .then( (success) => {
-    //             resolve(success);
-    //         })
-    //         .catch( (error) => {
-    //             reject(error);
-    //         });
+    return firebase.database()
+        .ref(firebaseUser.uid)
+        .child('tasks/' + key)
+        .update(data);
+}
 
-    // });
+export function readTaskFromFirebase(listener) {
+    const tasksReference = firebase
+        .database()
+        .ref(firebaseUser.uid)
+        .child('tasks');
+
+        tasksReference.on('value', (snapshot) => {
+            var tasks = [];
+            snapshot.forEach( (element) => {
+                var task = element.val();
+                task.key = element.key;
+                tasks.push(task);
+            });
+        listener(tasks);
+    });
 }

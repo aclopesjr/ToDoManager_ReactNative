@@ -29,7 +29,7 @@ export default class App extends Component {
       .then( (user) => {
 
         if (user) {
-          this.props.navigation.navigate('Task');
+          this.props.navigation.navigate('TasksList');
         } else {
           this.props.navigation.navigate('Login');
         }

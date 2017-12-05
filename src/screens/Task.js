@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TextInput, Switch, Text, Button, Alert} from 'react-native';
 import { NavigationActions } from 'react-navigation'
-//import { writeTaskOnFirebase } from '../services/FirebaseApi';
+import { writeTaskOnFirebase } from '../services/FirebaseApi';
 
 export default class Task extends Component {
 
@@ -48,7 +48,21 @@ export default class Task extends Component {
     }
 
     saveTask = () => {
-        
+        const data = {
+            title: this.state.title,
+            resume: this.state.resume,
+            priority: this.state.priority,
+            isDone: this.state.isDone
+        }
+
+        writeTaskOnFirebase(data)
+            .then( (success) => {
+                let backAction = NavigationActions.back( { key: null });
+                this.props.navigation.dispatch(backAction);
+            } )
+            .catch( (error) => {
+                Alert.alert('Error Saving', error.message);
+            } );
     }
 }
 
